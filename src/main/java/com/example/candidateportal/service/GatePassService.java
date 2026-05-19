@@ -6,10 +6,18 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.example.candidateportal.entity.Employee;
 import com.example.candidateportal.entity.GatePass;
 import com.example.candidateportal.entity.User;
+import com.example.candidateportal.repository.EmployeeRepository;
 import com.example.candidateportal.repository.GatePassRepository;
 import com.example.candidateportal.repository.UserRepository;
 import com.example.candidateportal.utils.EmailService;
@@ -25,6 +33,9 @@ public class GatePassService {
     
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     public String applyGatePass(Long empId, Long managerId, String reason) {
 
@@ -86,4 +97,35 @@ public class GatePassService {
 
 		    return repo.findManagerMonthlyRequests(managerId, month, year);
 		}
-}
+	  
+	  public Page<GatePass> getGatePasses(String status, int page) {
+
+	        // Logged-in manager ka email
+	        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	        String email = auth.getName();
+
+	        // Manager employee record
+	        Employee manager = employeeRepository.findByEmailAndIsActiveTrue(email)
+	                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+	        Pageable pageable = PageRequest.of(
+	                page,
+	                10,
+	                Sort.by("id").descending()
+	        );
+
+	        // Sirf usi manager ke under aayi requests dikhengi
+	        if (status != null && !status.trim().isEmpty()) {
+	            return repo.findByManagerIdAndStatusIgnoreCase(
+	                    manager.getId(),
+	                    status,
+	                    pageable
+	            );
+	        }
+
+	        return repo.findByManagerId(
+	                manager.getId(),
+	                pageable
+	        );
+	    }
+	}

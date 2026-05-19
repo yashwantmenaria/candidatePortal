@@ -2,6 +2,8 @@ package com.example.candidateportal.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +16,8 @@ public interface GatePassRepository extends JpaRepository<GatePass, Long> {
 
     @Query("SELECT g FROM GatePass g WHERE g.managerId = :managerId AND MONTH(g.requestDate) = :month AND YEAR(g.requestDate) = :year")
     List<GatePass> findManagerMonthlyRequests(Long managerId, int month, int year);
+
+	Page<GatePass> findByManagerId(Long id, Pageable pageable);
+
+	Page<GatePass> findByManagerIdAndStatusIgnoreCase(Long id, String status, Pageable pageable);
 }

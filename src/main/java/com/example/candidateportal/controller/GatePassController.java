@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,14 @@ public class GatePassController {
     @GetMapping("/manager/{managerId}")
     public List<GatePass> managerDashboard(@PathVariable Long managerId) {
         return service.getManagerRequests(managerId);
+    }
+    
+    @PutMapping("/{id}/status")
+    public String approveGatePass(
+            @PathVariable Long id,
+            @RequestParam String status
+    ) {
+        return service.approveGatePass(id, status);
     }
   
 }

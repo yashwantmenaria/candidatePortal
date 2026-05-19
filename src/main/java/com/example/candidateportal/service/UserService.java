@@ -1,12 +1,21 @@
 package com.example.candidateportal.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.candidateportal.dto.AssignManagerRequest;
 import com.example.candidateportal.dto.ChangePasswordRequest;
 import com.example.candidateportal.dto.EmployeeDto;
 import com.example.candidateportal.entity.Employee;
@@ -16,6 +25,8 @@ import com.example.candidateportal.repository.EmployeeRepository;
 import com.example.candidateportal.repository.RoleRepository;
 import com.example.candidateportal.repository.UserRepository;
 import com.example.candidateportal.utils.EmailService;
+
+import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class UserService {
@@ -144,4 +155,77 @@ public class UserService {
 
         return "Profile updated successfully";
     }
+
+	public List<Employee> allManagerList() {
+        return employeeRepo.findByManagerIsNotNull();
+	}
+	
+	  public String assignManager(AssignManagerRequest request) {
+
+	        Employee employee = employeeRepo.findById(request.getEmployeeId())
+	                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+	        Employee manager = employeeRepo.findById(request.getManagerId())
+	                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
+	        if (employee.getId().equals(manager.getId())) {
+	            throw new RuntimeException("Employee cannot be their own manager");
+	        }
+
+	        // Manager assign
+	        employee.setManager(manager);
+
+	        employeeRepo.save(employee);
+
+	        return "Manager assigned successfully";
+	    }
+	  
+	  public Page<Employee> getAllEmployees(
+	            int page,
+	            int size,
+	            String sortBy,
+	            String sortDir,
+	            String search
+	    ) {
+
+	        Sort sort = sortDir.equalsIgnoreCase("desc")
+	                ? Sort.by(sortBy).descending()
+	                : Sort.by(sortBy).ascending();
+
+	        Pageable pageable = PageRequest.of(page, size, sort);
+
+	        Specification<Employee> specification = (root, query, cb) -> {
+	            if (search == null || search.trim().isEmpty()) {
+	                return cb.conjunction();
+	            }
+
+	            String keyword = "%" + search.toLowerCase() + "%";
+	            List<Predicate> predicates = new ArrayList<>();
+
+	            predicates.add(cb.like(cb.lower(root.get("firstName")), keyword));
+	            predicates.add(cb.like(cb.lower(root.get("lastName")), keyword));
+	            predicates.add(cb.like(cb.lower(root.get("email")), keyword));
+	            predicates.add(cb.like(cb.lower(root.get("employeeId")), keyword));
+	            predicates.add(cb.like(cb.lower(root.get("department")), keyword));
+
+	            return cb.or(predicates.toArray(new Predicate[0]));
+	        };
+
+	        return employeeRepo.findAll(specification, pageable);
+	    }
+	  
+	  public String deleteEmployee(Long id) {
+	        Employee employee = employeeRepo.findByIdAndIsActiveTrue(id)
+	                .orElseThrow(() -> new RuntimeException("Employee not found"));
+	        // Soft delete
+	        employee.setActive(false);
+	        employee.setDeleted(true);
+	        employeeRepo.save(employee);
+	        return "Employee deleted successfully";
+	    }
+	  
+	  public Employee getEmployeeById(Long id) {
+	        return employeeRepo.findByIdAndIsActiveTrue(id)
+	                .orElseThrow(() -> new RuntimeException("Employee not found"));
+	    }
 }
