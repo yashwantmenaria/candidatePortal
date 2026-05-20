@@ -40,7 +40,15 @@ public class EmployeeController {
 
 		String response = employeeService.changePassword(email, request);
 
-		return ResponseEntity.ok(employeeService.allManagerList());
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/update-profile")
+	public ResponseEntity<?> updateProfile(@RequestBody EmployeeDto request, Principal principal) {
+
+		String email = principal.getName();
+
+		return ResponseEntity.ok(employeeService.updateProfile(email, request));
 	}
 
 	@PostMapping("/assign-manager")
