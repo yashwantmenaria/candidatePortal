@@ -73,4 +73,9 @@ public class EmployeeController {
 	public Employee getEmployeeById(@PathVariable Long id) {
 		return employeeService.getEmployeeById(id);
 	}
+
+	@GetMapping("/managerList")
+	public List<Employee> allManagerList() {
+		return employeeService.allManagerList();
+	}
 }
