@@ -27,11 +27,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
+            .cors(cors -> {}) // IMPORTANT
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                    "/login")
+                                        .permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/hr/**").hasRole("HR")
                 .requestMatchers("/api/manager/**").hasRole("MANAGER")

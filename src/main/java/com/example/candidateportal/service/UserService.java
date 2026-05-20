@@ -128,7 +128,7 @@ public class UserService {
 
     public String updateProfile(String email, EmployeeDto request) {
 
-        Employee emp = employeeRepo.findByEmail(email)
+        Employee emp = employeeRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         emp.setQualification(request.getQualification());
