@@ -16,7 +16,7 @@ import com.example.candidateportal.service.ForgotPasswordService;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*") // frontend allow
+// @CrossOrigin(origins = "*") // frontend allow
 public class AuthController {
 
     @Autowired

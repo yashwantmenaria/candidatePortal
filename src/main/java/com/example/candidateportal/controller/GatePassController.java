@@ -3,6 +3,7 @@ package com.example.candidateportal.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.example.candidateportal.entity.GatePass;
 import com.example.candidateportal.service.GatePassService;
 
 @RestController
+@CrossOrigin(origins = "*") // frontend allow
 @RequestMapping("/gatepass")
 public class GatePassController {
 

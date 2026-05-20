@@ -2,6 +2,7 @@ package com.example.candidateportal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,8 @@ import com.example.candidateportal.dto.TimesheetRequest;
 import com.example.candidateportal.service.TimesheetService;
 
 @RestController
-@RequestMapping("/timesheet")
+@CrossOrigin(origins = "*") // frontend allow
+@RequestMapping("/api/timesheet")
 public class TimesheetController {
 
     @Autowired
