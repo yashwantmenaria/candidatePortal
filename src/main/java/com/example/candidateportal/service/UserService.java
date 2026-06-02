@@ -1,5 +1,6 @@
 package com.example.candidateportal.service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class UserService {
 		String token = UUID.randomUUID().toString();
 		user.setVerificationToken(token);
 		
-		Role empRole = roleRepo.findByName("EMPLOYEE").orElseThrow();
+		Role empRole = roleRepo.findByName(dto.getRole()).orElseThrow();
 
 		user.setRoles(Set.of(empRole));
 		userRepo.save(user);
@@ -228,4 +229,13 @@ public class UserService {
 	        return employeeRepo.findByIdAndIsActiveTrue(id)
 	                .orElseThrow(() -> new RuntimeException("Employee not found"));
 	    }
+
+	  public List<Employee> getEmpListUnderManager(Principal principal) {
+
+			String name = principal.getName();
+			Employee emp = employeeRepo.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+			return employeeRepo.findByManagerIdIsNotNull(emp.getId());
+
+	}
 }

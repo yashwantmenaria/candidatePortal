@@ -31,4 +31,6 @@ public class EmployeeDto {
 	private String ifscCode;
 	private boolean profileCompleted = false;
     private Long managerId;
+	private String role;
+
 }

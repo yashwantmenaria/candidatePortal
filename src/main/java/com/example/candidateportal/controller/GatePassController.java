@@ -15,7 +15,7 @@ import com.example.candidateportal.entity.GatePass;
 import com.example.candidateportal.service.GatePassService;
 
 @RestController
-@RequestMapping("/gatepass")
+// @RequestMapping("/gatepass")
 public class GatePassController {
 
     @Autowired

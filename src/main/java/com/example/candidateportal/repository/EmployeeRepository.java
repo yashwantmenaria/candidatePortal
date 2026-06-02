@@ -21,4 +21,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	Page<Employee> findAll(Specification<Employee> specification, Pageable pageable);
 
 	Optional<Employee> findByEmailAndIsActiveTrue(String email);
+
+	List<Employee> findByManagerIdIsNotNull(Long id);
+
 }
