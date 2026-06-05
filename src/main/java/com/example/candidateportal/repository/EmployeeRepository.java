@@ -22,6 +22,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 	Optional<Employee> findByEmailAndIsActiveTrue(String email);
 
-	List<Employee> findByManagerIdIsNotNull(Long id);
+	List<Employee> findByManagerIdIsNotNull(Employee employee);
 
 }

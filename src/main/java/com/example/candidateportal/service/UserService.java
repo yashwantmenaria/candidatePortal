@@ -231,11 +231,10 @@ public class UserService {
 	    }
 
 	  public List<Employee> getEmpListUnderManager(Principal principal) {
-
 			String name = principal.getName();
 			Employee emp = employeeRepo.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-			return employeeRepo.findByManagerIdIsNotNull(emp.getId());
-
+			
+			return employeeRepo.findByManagerIdIsNotNull(emp);
 	}
 }
