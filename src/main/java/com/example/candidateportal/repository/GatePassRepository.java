@@ -20,4 +20,6 @@ public interface GatePassRepository extends JpaRepository<GatePass, Long> {
 	Page<GatePass> findByManagerId(Long id, Pageable pageable);
 
 	Page<GatePass> findByManagerIdAndStatusIgnoreCase(Long id, String status, Pageable pageable);
+
+	Page<GatePass> findByEmployeeId(Long id, Pageable pageable);
 }

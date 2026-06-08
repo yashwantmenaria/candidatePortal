@@ -81,7 +81,6 @@ public class EmployeeController {
 
 	@GetMapping("/getEmpListUnderManager")
 	public List<Employee> getEmpListUnderManager(Principal principal) {
-		System.err.println("email >> "+ principal);
 		return employeeService.getEmpListUnderManager(principal);
 	}
 

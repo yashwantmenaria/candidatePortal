@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -128,4 +129,21 @@ public class GatePassService {
 	                pageable
 	        );
 	    }
+
+	  public Page<GatePass> getMyGatePasses(int page) {
+
+		    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		    String email = auth.getName();
+
+		    Employee employee = employeeRepository.findByEmailAndIsActiveTrue(email)
+		            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+		    Pageable pageable = PageRequest.of(
+		            page,
+		            10,
+		            Sort.by("id").descending()
+		    );
+
+		    return repo.findByEmployeeId(employee.getId(), pageable);
+		}
 	}
