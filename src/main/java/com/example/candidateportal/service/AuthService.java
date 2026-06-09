@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.candidateportal.entity.Employee;
 import com.example.candidateportal.entity.Role;
 import com.example.candidateportal.entity.User;
+import com.example.candidateportal.repository.EmployeeRepository;
 import com.example.candidateportal.repository.UserRepository;
 import com.example.candidateportal.security.JwtUtil;
 
@@ -22,6 +24,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder encoder;
+    
+    @Autowired
+    private EmployeeRepository employeeRepo;
 
     public String login(String email, String password) {
 
@@ -31,13 +36,16 @@ public class AuthService {
         if (!encoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
-
         List<String> roles = user.getRoles()
                 .stream()
                 .map(Role::getName)
                 .toList();
 
-        return jwtUtil.generateToken(user.getEmail(), roles);
+        Employee employee = employeeRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        Long empId = employee.getId();
+
+        return jwtUtil.generateToken(user.getEmail(),empId, roles);
     }
     public User register(User user) {
         user.setPassword(encoder.encode(user.getPassword()));
